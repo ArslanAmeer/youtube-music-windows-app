@@ -1,6 +1,6 @@
 {
   "name": "youtube-music-windows-app",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "main.js",
   "author": {
     "name": "Arslan Ameer",
@@ -15,12 +15,23 @@
     "appId": "com.arslanameer.youtube-music-windows-app",
     "productName": "YouTube Music Windows App",
     "files": [
-      "dist/",
+      "dist/**/*",
       "main.js",
-      "package.json"
+      "package.json",
+      "assets/**/*"
     ],
     "directories": {
+      "output": "dist",
       "buildResources": "assets"
+    },
+    "win": {
+      "icon": "assets/logo-trim.png"
+    },
+    "mac": {
+      "icon": "assets/logo-trim.png"
+    },
+    "linux": {
+      "icon": "assets/logo-trim.png"
     }
   },
   "private": true,

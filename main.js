@@ -1,4 +1,5 @@
 const { app, BrowserWindow, dialog, session } = require("electron");
+const path = require("path");
 
 let mainWindow;
 let isQuitting = false; // Track if the app is explicitly quitting
@@ -27,6 +28,7 @@ function createWindow() {
       contextIsolation: false,
       session: ses,
     },
+    icon: path.join(__dirname, "assets/logo-trim.png"),
   });
 
   mainWindow.loadURL("https://music.youtube.com");
@@ -41,7 +43,7 @@ function createWindow() {
         buttons: ["Yes", "No"],
         defaultId: 1, // Default to "No"
         title: "Confirm",
-        message: "Do you want to close the app? All music playback will stop.",
+        message: "Do you want to close the app? Music playback will stop.",
       });
 
       if (choice === 0) {
