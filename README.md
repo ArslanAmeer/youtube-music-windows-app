@@ -9,6 +9,8 @@
 ## **Overview**
 The **YouTube Music Desktop App** is a lightweight and feature-rich Electron-based desktop application that brings the full functionality of YouTube Music to your desktop. With seamless integration, persistent sessions, and efficient controls, this app enhances your music streaming experience by providing a standalone desktop application for YouTube Music.
 
+[Download](https://github.com/ArslanAmeer/youtube-music-windows-app/releases/tag/v1.2.1)
+
 ---
 
 ## **Key Features**
@@ -27,30 +29,16 @@ Here are some exciting features planned for future releases:
    - Quick controls for play/pause, next, and previous directly from the tray.
 3. **Better Notification Support**:
    - Toast notifications for song changes.
+4. **MacOs**
+   - Installer for macOs 
 
 ---
 
 ## **Installation**
 ### **Windows**
-1. Download the latest `.exe` installer from the [Releases](#) section.
+1. Download the latest `.exe` installer from the [Releases](https://github.com/ArslanAmeer/youtube-music-windows-app/releases/tag/v1.2.1) section.
 2. Run the installer and follow the instructions.
 3. Launch the app from the Start Menu or Desktop Shortcut.
-
-### **macOS**
-1. Download the `.dmg` file from the [Releases](#) section.
-2. Open the `.dmg` and drag the app to the Applications folder.
-3. Launch the app from the Applications folder.
-
-### **Linux**
-1. Download the `.AppImage` file from the [Releases](#) section.
-2. Make the file executable:
-   ```bash
-   chmod +x YouTube-Music-Desktop.AppImage
-   ```
-3. Run the app:
-   ```bash
-   ./YouTube-Music-Desktop.AppImage
-   ```
 
 ---
 
