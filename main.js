@@ -1,62 +1,159 @@
-const { app, BrowserWindow, dialog, session } = require("electron");
+const { app, BrowserWindow, Menu, Tray, ipcMain, dialog } = require("electron");
 const path = require("path");
 
 let mainWindow;
-let isQuitting = false; // Track if the app is explicitly quitting
+let settingsWindow;
+let tray;
+let isQuitting = false;
 
-const gotTheLock = app.requestSingleInstanceLock();
+const settings = {
+  minimizeOnClose: false,
+  showInTray: true,
+  minimizeToTray: false,
+};
 
-if (!gotTheLock) {
-  app.quit();
-} else {
-  app.on("second-instance", () => {
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore();
-      mainWindow.focus();
-    }
-  });
-}
-
-function createWindow() {
-  const ses = session.fromPartition("persist:youtube-music");
-
+function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      session: ses,
     },
     icon: path.join(__dirname, "assets/logo-trim.png"),
   });
 
   mainWindow.loadURL("https://music.youtube.com");
 
-  // Intercept the close event
+  // Handle the "close" event for "Minimize on Close" behavior
   mainWindow.on("close", (e) => {
     if (!isQuitting) {
-      e.preventDefault(); // Prevent the default close behavior
-
-      const choice = dialog.showMessageBoxSync(mainWindow, {
-        type: "question",
-        buttons: ["Yes", "No"],
-        defaultId: 1, // Default to "No"
-        title: "Confirm",
-        message: "Do you want to close the app? Music playback will stop.",
-      });
-
-      if (choice === 0) {
-        // "Yes" button
-        isQuitting = true; // Set the quitting flag
-        mainWindow.destroy(); // Force destroy the window
-        app.quit(); // Quit the app entirely
+      if (settings.minimizeOnClose) {
+        e.preventDefault();
+        settings.minimizeToTray ? mainWindow.hide() : mainWindow.minimize();
+      } else {
+        isQuitting = true;
+        app.quit();
       }
+    }
+  });
+
+  // Handle the "minimize" event for "Minimize to Tray" behavior
+  mainWindow.on("minimize", (e) => {
+    if (settings.minimizeToTray) {
+      e.preventDefault(); // Prevent default minimize behavior
+      mainWindow.hide(); // Hide the window instead of minimizing it
     }
   });
 }
 
-app.on("ready", createWindow);
+
+function createSettingsWindow() {
+  if (settingsWindow) return;
+
+  const { width, height } =
+    require("electron").screen.getPrimaryDisplay().workAreaSize;
+
+  settingsWindow = new BrowserWindow({
+    width: 600,
+    height: 600,
+    x: Math.round((width - 600) / 2), // Center horizontally
+    y: Math.round((height - 600) / 2), // Center vertically
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+
+  settingsWindow.loadFile("settings.html");
+  settingsWindow.setMenu(null);
+
+  settingsWindow.on("closed", () => {
+    settingsWindow = null;
+  });
+}
+
+function createTray() {
+  if (!tray) {
+    tray = new Tray(path.join(__dirname, "assets/logo-trim.png"));
+    tray.setToolTip("YouTube Music");
+    tray.setContextMenu(
+      Menu.buildFromTemplate([
+        {
+          label: "Show App",
+          click: () => {
+            mainWindow.show();
+          },
+        },
+        {
+          label: "Quit",
+          click: () => {
+            isQuitting = true;
+            app.quit();
+          },
+        },
+      ])
+    );
+
+    tray.on("click", () => {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+      }
+    });
+  }
+}
+
+
+// App ready event
+app.on("ready", () => {
+  createMainWindow();
+  createTray();
+
+  // Add menu with "Settings" and "Quit" options
+  const menu = Menu.buildFromTemplate([
+    {
+      label: "File",
+      submenu: [
+        {
+          label: "Settings",
+          click: createSettingsWindow, // Open the settings window
+        },
+        { role: "quit" }, // Quit the application
+      ],
+    },
+  ]);
+  Menu.setApplicationMenu(menu); // Apply the menu to the app
+});
+
+
+
+ipcMain.handle("get-settings", () => settings);
+
+ipcMain.on("update-setting", (event, { key, value }) => {
+  settings[key] = value;
+
+  if (key === "showInTray") {
+    if (value) {
+      createTray();
+    } else if (!settings.minimizeToTray && tray) {
+      tray.destroy();
+      tray = null;
+    }
+  }
+
+  if (key === "minimizeToTray") {
+    if (value && !tray) {
+      createTray();
+    } else if (!value && !settings.showInTray && tray) {
+      tray.destroy();
+      tray = null;
+    }
+  }
+});
+
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -66,10 +163,10 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    createMainWindow();
   }
 });
 
 app.on("before-quit", () => {
-  isQuitting = true; // Prevent dialog on quit
+  isQuitting = true;
 });

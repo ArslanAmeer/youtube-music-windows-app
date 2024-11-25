@@ -4,26 +4,126 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Settings</title>
+  <style>
+    :root {
+      --bg-light: #ffffff;
+      --bg-dark: #202020;
+      --text-light: #000000;
+      --text-dark: #ffffff;
+      --primary-color: #ff0000; /* YouTube's primary color */
+      --checkbox-border: #aaaaaa;
+    }
+
+    /* Apply system theme */
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif; /* YouTube's general font */
+      font-size: 16px;
+      color: var(--text-light);
+      background-color: var(--bg-light);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Dark theme support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        color: var(--text-dark);
+        background-color: var(--bg-dark);
+      }
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary-color);
+      text-align: center;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    input[type="checkbox"] {
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--checkbox-border);
+      border-radius: 4px;
+      background-color: transparent;
+      outline: none;
+      margin-right: 12px;
+      transition: background-color 0.3s, border-color 0.3s;
+      cursor: pointer;
+    }
+
+    input[type="checkbox"]:checked {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    input[type="checkbox"]:focus {
+      outline: 2px solid var(--primary-color);
+    }
+
+    input[type="checkbox"]::before {
+      content: "✔";
+      display: block;
+      font-size: 18px;
+      color: var(--text-dark);
+      text-align: center;
+      line-height: 20px;
+      opacity: 0;
+    }
+
+    input[type="checkbox"]:checked::before {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
   <h1>Settings</h1>
+
   <label>
-    <input type="radio" name="closeBehavior" value="close" checked>
-    Close App
+    <input type="checkbox" id="minimizeOnClose" />
+    Minimize on Close
   </label>
+
   <label>
-    <input type="radio" name="closeBehavior" value="minimize">
-    Minimize App
+    <input type="checkbox" id="showInTray" />
+    Show in System Tray
+  </label>
+
+  <label>
+    <input type="checkbox" id="minimizeToTray" />
+    Minimize to System Tray
   </label>
 
   <script>
-    const { ipcRenderer } = require('electron');
+    const { ipcRenderer } = require("electron");
 
-    // Update behavior when the user changes the option
-    document.querySelectorAll('input[name="closeBehavior"]').forEach((radio) => {
-      radio.addEventListener('change', () => {
-        ipcRenderer.send('update-close-behavior', radio.value);
-      });
+    // Load existing settings
+    ipcRenderer.invoke("get-settings").then((settings) => {
+      document.getElementById("minimizeOnClose").checked = settings.minimizeOnClose;
+      document.getElementById("showInTray").checked = settings.showInTray;
+      document.getElementById("minimizeToTray").checked = settings.minimizeToTray;
+    });
+
+    // Update settings when checkboxes change
+    document.getElementById("minimizeOnClose").addEventListener("change", (e) => {
+      ipcRenderer.send("update-setting", { key: "minimizeOnClose", value: e.target.checked });
+    });
+
+    document.getElementById("showInTray").addEventListener("change", (e) => {
+      ipcRenderer.send("update-setting", { key: "showInTray", value: e.target.checked });
+    });
+
+    document.getElementById("minimizeToTray").addEventListener("change", (e) => {
+      ipcRenderer.send("update-setting", { key: "minimizeToTray", value: e.target.checked });
     });
   </script>
 </body>
