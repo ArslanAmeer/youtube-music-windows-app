@@ -11,6 +11,8 @@ The **YouTube Music Desktop App** is a lightweight and feature-rich Electron-bas
 
 [Download](https://github.com/ArslanAmeer/youtube-music-windows-app/releases/tag/v1.2.1)
 
+> **NOTE**: The app is completely safe to use, OS might show you harmful message as it is not signed, as it is OSS and free to use. You can contine install it anyway.
+
 ---
 
 ## **Key Features**
