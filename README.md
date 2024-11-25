@@ -22,10 +22,8 @@ The **YouTube Music Desktop App** is a lightweight and feature-rich Electron-bas
 ## **Upcoming Updates**
 Here are some exciting features planned for future releases:
 1. **Settings Page**:
-   - **Minimize on Close**: Allow users to choose whether the app closes completely or minimizes to the system tray when the close button is clicked.
    - **Startup Behavior**: Option to start the app on system boot.
 2. **System Tray Integration**:
-   - Minimize to the system tray for background playback.
    - Quick controls for play/pause, next, and previous directly from the tray.
 3. **Better Notification Support**:
    - Toast notifications for song changes.
