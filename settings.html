@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings</title>
+</head>
+<body>
+  <h1>Settings</h1>
+  <label>
+    <input type="radio" name="closeBehavior" value="close" checked>
+    Close App
+  </label>
+  <label>
+    <input type="radio" name="closeBehavior" value="minimize">
+    Minimize App
+  </label>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    // Update behavior when the user changes the option
+    document.querySelectorAll('input[name="closeBehavior"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        ipcRenderer.send('update-close-behavior', radio.value);
+      });
+    });
+  </script>
+</body>
+</html>
