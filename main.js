@@ -1,4 +1,5 @@
 const { app, BrowserWindow, Menu, Tray, ipcMain, dialog } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const path = require("path");
 
 let mainWindow;
@@ -46,7 +47,6 @@ function createMainWindow() {
     }
   });
 }
-
 
 function createSettingsWindow() {
   if (settingsWindow) return;
@@ -106,7 +106,6 @@ function createTray() {
   }
 }
 
-
 // App ready event
 app.on("ready", () => {
   createMainWindow();
@@ -128,7 +127,18 @@ app.on("ready", () => {
   Menu.setApplicationMenu(menu); // Apply the menu to the app
 });
 
+autoUpdater.on("update-downloaded", () => {
+  const choice = dialog.showMessageBoxSync({
+    type: "question",
+    buttons: ["Yes", "Later"],
+    defaultId: 0,
+    message: "A new update is available. Do you want to install it now?",
+  });
 
+  if (choice === 0) {
+    autoUpdater.quitAndInstall();
+  }
+});
 
 ipcMain.handle("get-settings", () => settings);
 
@@ -153,7 +163,6 @@ ipcMain.on("update-setting", (event, { key, value }) => {
     }
   }
 });
-
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {

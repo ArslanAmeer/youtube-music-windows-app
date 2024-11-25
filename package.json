@@ -17,11 +17,17 @@
   "build": {
     "appId": "com.arslanameer.youtube-music-windows-app",
     "productName": "YouTube Music Windows App",
+    "publish": [
+      {
+        "provider": "github"
+      }
+    ],
     "files": [
       "dist/**/*",
       "main.js",
       "package.json",
-      "assets/**/*"
+      "assets/**/*",
+      "settings.html"
     ],
     "directories": {
       "output": "dist",
@@ -33,6 +39,12 @@
         "portable"
       ],
       "icon": "assets/logo-trim.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
     },
     "mac": {
       "target": [
@@ -54,5 +66,8 @@
   "devDependencies": {
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
   }
 }
